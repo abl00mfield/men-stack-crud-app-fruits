@@ -72,6 +72,26 @@ app.delete("/fruits/:fruitId", async (req, res) => {
   res.redirect("/fruits");
 });
 
+app.get("/fruits/:fruitId/edit", async (req, res) => {
+  const foundFruit = await Fruit.findById(req.params.fruitId);
+
+  res.render("fruits/edit.ejs", { fruit: foundFruit });
+});
+
+//update route used to capture edit form submissions from the client
+//and send updates to mongoDB
+app.put("/fruits/:fruitId", async (req, res) => {
+  if (req.body.isReadyToEat == "on") {
+    req.body.isReadyToEat = true;
+  } else {
+    req.body.isReadyToEat = false;
+  }
+  //update the fruit in the database
+
+  await Fruit.findByIdAndUpdate(req.params.fruitId, req.body);
+  res.redirect(`/fruits/${req.params.fruitId}`);
+});
+
 app.listen(3000, () => {
   console.log("Listening on port 3000");
 });
